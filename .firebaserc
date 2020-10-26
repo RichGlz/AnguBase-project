@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "listado-app2": {
+      "hosting": {
+        "Angubase1": [
+          "listado-app2"
+        ]
+      }
+    }
+  }
+}
