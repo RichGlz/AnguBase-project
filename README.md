@@ -1,27 +1,202 @@
-# Angubase1
+# Angular con lectura Firebase (Guía rápida)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.2.0.
+Basado en la [documentación](https://github.com/angular/angularfire/blob/master/docs/install-and-setup.md) oficial de angularfire.
 
-## Development server
+## 1. Crear un nuevo proyecto:
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+  **En Windows:**
 
-## Code scaffolding
+  1. Vaya a la carpeta donde creará el proyecto.
+  2. Presione `shift + clic derecho`
+  3. Seleccione ` Abrir la ventana de PowerShell aquí `
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 2. En el PowerShell
 
-## Build
+``` shell
+npm install -g @angular/cli
+ng new <nombre-del-proyecto>
+cd <nombre del proyecto>
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+> En cuanto a **estilos** prefiero utilizar *SCSS*; es similar a *CSS* pero con más opciones. 👌🏻
 
-## Running unit tests
+## 3. Instalar Angularfire y Firebase
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+El nuevo comando de *Angular CLI* para agregar estos paquetes.
 
-## Running end-to-end tests
+``` shell
+ng add @angular/fire
+```
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## 4. Instalar Bootstrap
 
-## Further help
+El nuevo comando de *Angular CLI* para agregar estos paquetes.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+``` shell
+npm i jquery bootstrap @popperjs/core --save
+```
+
+### 4.1 Instalar boostrap `angular.json`
+
+**Antes:**
+
+``` angular
+...
+  "styles": [
+  "src/styles.scss"
+  ],
+  "scripts": []
+...
+```
+
+**Después:**
+
+``` angular
+...
+  "styles": [
+  "src/styles.scss",
+  "./node_modules/bootstrap/dist/css/bootstrap.min.css"
+  ],
+  "scripts": [
+    "./node_modules/jquery/dist/jquery.slim.min.js",
+    "./node_modules/bootstrap/dist/js/bootstrap.min.js",
+    "./node_modules/popper.js/dist/umd/popper.min.js"
+  ]
+...
+```
+
+## 5. Agregar la configuración en el archivo `environments.ts`
+
+Dentro de `src/environments/environments.ts` :
+
+**Antes:**
+
+``` ts
+...
+  export const environment = {
+    production: false
+  };
+...
+```
+
+
+**Después:**
+
+``` ts
+...
+  export const environment = {
+    production: false,
+    config: {
+      apiKey: '...',
+      authDomain: '...',
+      databaseURL: '...',
+      projectId: '...',
+      storageBucket: '...',
+      messagingSenderId: '...',
+      appId: '...',
+    }
+  };
+...
+```
+
+> Sustitúyela con tu propia información desde la [Consola de firebase](https://console.firebase.google.com/u/0).
+
+## 6. Configurar `@NgModule` para el `AngularFireModule` :
+
+Open `/src/app/app.module.ts`, inyecta los proveedores de Firebase, y especifica tu configuración de Firebase.
+
+**Antes:**
+
+``` ts
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  imports: [
+    BrowserModule
+  ],
+  declarations: [ AppComponent ],
+  bootstrap: [ AppComponent ]
+})
+export class AppModule {}
+```
+
+**Después:**
+
+``` ts
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { AppComponent } from './app.component';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from '../environments/environment';
+
+@NgModule({
+  imports: [
+    BrowserModule,
+    AngularFireModule.initializeApp(environment.config),
+    AngularFireAnalyticsModule,
+    AngularFirestoreModule
+  ],
+  declarations: [ AppComponent ],
+  bootstrap: [ AppComponent ]
+})
+export class AppModule {}
+```
+
+## 7. Aplica *Data binding* desde la colección de Firestore a una lista
+
+**TypeScript** - En el componente: `/src/app/app.component.ts` :
+
+**Antes:**
+
+``` ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: 'app.component.html',
+  styleUrls: ['app.component.scss']
+})
+export class AppComponent {
+  title: 'nombre-de-la-app'
+}
+```
+
+**Después:**
+
+``` ts
+import { Component } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: 'app.component.html',
+  styleUrls: ['app.component.scss']
+})
+export class AppComponent {
+  items: Observable<any[]>;
+  constructor(db: AngularFirestore) {
+    this.items = db.collection('items').valueChanges();
+  }
+}
+```
+
+**HTML** - En el componente `/src/app/app.component.html`:
+
+``` html
+<ul>
+  <li class="text" *ngFor="let item of items | async">
+    {{item.name}}
+  </li>
+</ul>
+```
+
+>También puedes descargar esta [plantilla HTML](asd) con **Bootstrap** para que se vea mejor tu proyecto.
+
+## 8. Ejecuta el servidor:
+
+``` shell
+ng serve
+```
