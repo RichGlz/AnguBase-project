@@ -193,7 +193,7 @@ export class AppComponent {
 </ul>
 ```
 
->También puedes descargar esta [plantilla HTML](asd) con **Bootstrap** para que se vea mejor tu proyecto.
+>También puedes descargar esta [plantilla HTML](https://github.com/RichGlz/AnguBase-project/blob/master/src/app/app.component.html) con **Bootstrap** para que se vea mejor tu proyecto.
 
 ## 8. Ejecuta el servidor:
 
