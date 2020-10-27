@@ -40,7 +40,7 @@ npm i jquery bootstrap @popperjs/core --save
 
 **Antes:**
 
-``` angular
+``` ts
 ...
   "styles": [
   "src/styles.scss"
@@ -51,7 +51,7 @@ npm i jquery bootstrap @popperjs/core --save
 
 **Después:**
 
-``` angular
+``` ts
 ...
   "styles": [
   "src/styles.scss",
